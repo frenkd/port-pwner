@@ -12,7 +12,8 @@ app.config.from_mapping(
 
 @app.route('/')
 def base():
-    return redirect(url_for('home'))
+    # return redirect(url_for('home'))
+    return render_template('index.html')
 
 # a simple page that says hello
 @app.route('/home')
