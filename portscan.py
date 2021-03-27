@@ -88,13 +88,18 @@ def get_last(target=TARGET):
 
 def get_scans():
     db = shelve.open(get_path())
-    return ([{"id": scan, "target": target} for target in db for scan in db[target] if scan != "last"])
+    x = ([{"id": scan, "target": target}
+          for target in db for scan in db[target] if scan != "last"])
+    x.sort(key=lambda x: x["id"], reverse=True)
+    return x
 
 
-
-def get_scans(target):
+def get_scans_from_target(target):
     db = shelve.open(get_path())
-    return ([{"id": scan, "target": target} for scan in db[target] if scan != "last"])
+    x = ([{"id": scan, "target": target}
+          for scan in db[target] if scan != "last"])
+    x.sort(key=lambda x: x["id"], reverse=True)
+    return x
 
 
 
@@ -110,9 +115,9 @@ def get_path(target=TARGET) -> str:
 
 
 if __name__ == "__main__":
-    print(scan())
+    # print(scan())
     # print(get_last())
-    # print(get_scans())
+    print(get_scans())
     # print(get_targets())
     # print(get_scan('1616876222.176661'))
     # print(get_scans("localhost"))
