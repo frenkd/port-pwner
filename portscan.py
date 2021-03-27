@@ -6,6 +6,7 @@ import socket
 import datetime
 from socket import getservbyport
 from datetime import datetime
+# from compare_versions import check_output
 
 ascii_banner = pyfiglet.figlet_format("port-pwner")
 print(ascii_banner)
@@ -33,21 +34,46 @@ try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         socket.setdefaulttimeout(1)
 
-        # returns an error indicator
         result = s.connect_ex((target, port))
         if result == 0:
             print(f"found {port} open ")
             s.sendall("haha lmao\n".encode())
-            status[port] = s.recv(4096)
-            print(status[port].decode("utf-8"))
-        s.close() 
+            try:
+                status[port] = s.recv(4096).decode("utf-8")
+                print(status[port]) 
+            except socket.error:
+                status[port] = None
+                print("no response from server")
+            status[port] = {"version": check_output(
+                status[port]), "response": status[port]}
+        s.close()
 
-        now_ts = datetime.now().timestamp()
-        port_history = db.get("last", {})
-        # for port_old, _ in port_history:
+    print("Scan complete")
 
-        db[now_ts] = status
-        db["last"] = status
+    port_history = db.get("last", {})
+    ports_old = port_history.keys()
+    ports_new = status.keys()
+
+    print(f"old ports: {ports_old}")
+    print(f"new ports: {ports_new}")
+
+    unchanged_ports = [port for port in ports_new if port in ports_old]
+    for port in unchanged_ports:
+        if port_history[port] != status[port]:
+            print(
+                f"Service {port_history[port]} changed to {status[port]}")
+
+    removed_ports = [port for port in ports_old if port not in ports_new]
+    for port in removed_ports:
+        print(f"Removed {port}")
+
+    new_ports = [port for port in ports_new if port not in ports_old]
+    for port in new_ports:
+        print(f"Added {port}")
+
+    now_ts = datetime.now().timestamp()
+    db[str(now_ts)] = status
+    db["last"] = status
 
 
 except KeyboardInterrupt:
