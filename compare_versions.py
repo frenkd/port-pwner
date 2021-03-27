@@ -21,13 +21,14 @@ Content-Type: text/html; charset=iso-8859-1
 </body></html>'''
 
 
-def parse_output_ssh(input_string):
-    version = input_string.split("OpenSSH_",1)[1].split(" ",1)[0][:3]
-    print(version)
-
-def parse_output_apache(input_string):
-    version = input_string.split("Server: Apache/",1)[1].split(" ",1)[0]
-    print(version)
+def check_output(input_string):
+    if None:
+        return None
+    if "OpenSSH_" in input_string:
+        return input_string.split("OpenSSH_", 1)[1].split(" ", 1)[0][:3]
+    if "Server: Apache/" in input_string:
+        return input_string.split("Server: Apache/", 1)[1].split(" ", 1)[0]
+    return None
 
 if __name__ == "__main__":
     parse_output_ssh(EXAMPLE_SSH)
