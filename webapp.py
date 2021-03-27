@@ -1,6 +1,8 @@
 import os
 
 from flask import Flask, render_template, redirect, url_for
+from portscan import scan
+import json
 
 # create and configure the app
 app = Flask(__name__, instance_relative_config=True)
@@ -18,11 +20,10 @@ def home():
     return render_template('home.html', labels=[("Martin", "21"), ("Frenk", "22"), ("Janez", "23")])
 
 @app.route('/scan')
-def event_tracker():
-    # Parse query data - specify target
+def start_scan():
     accountId = request.args.get('target')
-
-    return " "
+    results = scan(target)
+    return json.dumps(results)
 
 if __name__ == '__main__':
     app.run(debug=True)
