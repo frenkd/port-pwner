@@ -6,8 +6,10 @@ import datetime
 from datetime import datetime
 from servicer import check_output, get_service_name
 
+TARGET = "192.168.1.34"
 
-def scan(target):
+
+def scan(target=TARGET):
     db = shelve.open(get_path(target))
     try:
         status = {}
@@ -16,7 +18,7 @@ def scan(target):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             socket.setdefaulttimeout(1)
 
-            result = s.connect_ex((target, port)) 
+            result = s.connect_ex((target, port))
             if result == 0:
                 print(f"found {port} open ")
                 s.sendall("\n".encode())
@@ -28,7 +30,7 @@ def scan(target):
                     print("no response from server")
                 service_id, version = check_output(status[port])
                 status[port] = {"version": version, "serviceID": service_id,
-                                "service": get_service_name(service_id), "response": status[port], "new": False} 
+                                "service": get_service_name(service_id), "response": status[port], "new": False}
             s.close()
 
         print("Scan complete")
@@ -49,12 +51,12 @@ def scan(target):
         removed_ports = [port for port in ports_old if port not in ports_new]
         for port in removed_ports:
             print(f"Removed {port}, {port_history[port]['version']}")
-            status[port] = {"removed": True} 
-            
+            status[port] = {"removed": True}
+
         new_ports = [port for port in ports_new if port not in ports_old]
         for port in new_ports:
             print(f"Added {port}, {status[port]['version']}")
-            status[port]["new"] = True 
+            status[port]["new"] = True
 
         now_ts = datetime.now().timestamp()
         db[str(now_ts)] = status
@@ -68,13 +70,22 @@ def scan(target):
         db.close()
 
 
-def get_last(target):
+def get_last(target=TARGET):
     return shelve.open(get_path(target))["last"]
 
 
-def get_path(target: str) -> str:
-    return "data/"+target
+def get_scans(target=TARGET):
+    return list(shelve.open(get_path(target)).keys())
 
+
+def get_scan(timestamp, target=TARGET):
+    return shelve.open(get_path(target))[timestamp]
+
+
+def get_path(target=TARGET) -> str:
+    return "data/"+target
+ 
 
 if __name__ == "__main__":
-    print(scan("192.168.1.34"))
+    print(get_last())
+    print(get_scan('1616870681.286603'))
