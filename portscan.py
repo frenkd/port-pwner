@@ -14,7 +14,7 @@ def scan(target=TARGET):
     try:
         status = {}
         # scan ports
-        for port in range(1, 65535):
+        for port in [22,80,4000,25565]:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             socket.setdefaulttimeout(1)
 

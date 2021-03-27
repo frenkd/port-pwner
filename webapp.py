@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from portscan import scan
 import json
 
@@ -20,9 +20,9 @@ def base():
 def home():
     return render_template('home.html', labels=[("Martin", "21"), ("Frenk", "22"), ("Janez", "23")])
 
-@app.route('/scan')
+@app.route('/start_scan', methods=['POST'])
 def start_scan():
-    accountId = request.args.get('target')
+    target = request.form['target']
     results = scan(target)
     return json.dumps(results)
 
