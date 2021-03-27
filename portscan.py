@@ -6,15 +6,16 @@ import datetime
 from datetime import datetime
 from servicer import check_output, get_service_name
 
+PORTS_TO_SCAN = [22, 80, 4000, 25565]  # range(1, 65535)
 TARGET = "192.168.1.34"
 
 
 def scan(target=TARGET):
     db = shelve.open(get_path(target))
     try:
-        status = {}
+        status = {"target": target}
         # scan ports
-        for port in [22,80,4000,25565]:
+        for port in PORTS_TO_SCAN:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             socket.setdefaulttimeout(1)
 
@@ -24,7 +25,7 @@ def scan(target=TARGET):
                 s.sendall("\n".encode())
                 try:
                     status[port] = s.recv(4096).decode("utf-8")
-                    print(status[port])
+                    # print(status[port])
                 except socket.error:
                     status[port] = None
                     print("no response from server")
@@ -34,13 +35,16 @@ def scan(target=TARGET):
             s.close()
 
         print("Scan complete")
-
-        port_history = db.get("last", {})
-        ports_old = port_history.keys()
-        ports_new = status.keys()
+        if target not in db:
+            db[target] = {"last": {}}
+        port_history = db[target]["last"]
+        ports_old = [k for k in port_history.keys() if isinstance(k, int)]
+        ports_new = [k for k in status.keys() if isinstance(k, int)]
 
         print(f"old ports: {ports_old}")
         print(f"new ports: {ports_new}")
+
+        # TODO check only scanned ports
         unchanged_ports = [port for port in ports_new if port in ports_old]
         for port in unchanged_ports:
             if port_history[port]['version'] != status[port]['version']:
@@ -48,44 +52,67 @@ def scan(target=TARGET):
                     f"Service {port_history[port]['version']} changed to {status[port]['version']}")
                 status[port]["updated"] = port_history[port]
 
+        # TODO check only scanned ports
         removed_ports = [port for port in ports_old if port not in ports_new]
         for port in removed_ports:
             print(f"Removed {port}, {port_history[port]['version']}")
             status[port] = {"removed": True}
 
+        # TODO check only scanned ports
         new_ports = [port for port in ports_new if port not in ports_old]
         for port in new_ports:
             print(f"Added {port}, {status[port]['version']}")
             status[port]["new"] = True
 
+        # save current scan and overwrite the latest scan
         now_ts = datetime.now().timestamp()
-        db[str(now_ts)] = status
-        db["last"] = status
+        x = db[target]
+        x[str(now_ts)] = status
+        x["last"] = status
+        db[target] = x
         return status
 
     except socket.gaierror:
-        print("\n Hostname Could Not Be Resolved !!!!")
+        print("\n Hostname Could Not Be Resolved")
         sys.exit()
     finally:
         db.close()
 
 
 def get_last(target=TARGET):
-    return shelve.open(get_path(target))["last"]
+    db = shelve.open(get_path(target))
+    if target in db:
+        return db[target]["last"]
+    return {}
 
 
-def get_scans(target=TARGET):
-    return list(shelve.open(get_path(target)).keys())
+def get_scans():
+    db = shelve.open(get_path())
+    return ([{"id": scan, "target": target} for target in db for scan in db[target] if scan != "last"])
+
+
+
+def get_scans(target):
+    db = shelve.open(get_path())
+    return ([{"id": scan, "target": target} for scan in db[target] if scan != "last"])
+
 
 
 def get_scan(timestamp, target=TARGET):
-    return shelve.open(get_path(target))[timestamp]
+    return shelve.open(get_path(target))[target][timestamp]
+
+def get_targets():
+    return list(shelve.open(get_path()).keys())
 
 
 def get_path(target=TARGET) -> str:
-    return "data/"+target
- 
+    return "data/port_data"
+
 
 if __name__ == "__main__":
-    print(get_last())
-    print(get_scan('1616870681.286603'))
+    print(scan())
+    # print(get_last())
+    # print(get_scans())
+    # print(get_targets())
+    # print(get_scan('1616876222.176661'))
+    # print(get_scans("localhost"))
