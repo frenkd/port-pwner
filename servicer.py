@@ -32,11 +32,10 @@ name_map = {
 def check_output(input_string):
     if input_string is None:
         return (None, 0)
-    if "OpenSSH_" in input_string:
-
-        return (APACHE, input_string.split("OpenSSH_", 1)[1].split(" ", 1)[0][:3])
     if "Server: Apache/" in input_string:
-        return (OPENSSH, input_string.split("Server: Apache/", 1)[1].split(" ", 1)[0])
+        return (APACHE, input_string.split("Server: Apache/", 1)[1].split(" ", 1)[0])
+    if "OpenSSH_" in input_string: 
+        return (OPENSSH, input_string.split("OpenSSH_", 1)[1].split(" ", 1)[0][:3])
     return None
 
 
