@@ -13,8 +13,16 @@ for tag in invalid_tags:
     for match in tonight.findAll(tag):
         match.replaceWithChildren()
 s = str(tonight.contents)
-version = re.sub('[^0-9.]+', '', s)
+version_apache = re.sub('[^0-9.]+', '', s)
+print(version_apache)
 
-# Get current ssh version
 
-print(version)
+
+# Get current OpenSSH version
+page = requests.get("https://www.openssh.com/releasenotes.html")
+soup = BeautifulSoup(page.content, 'html.parser')
+release_tags = soup.find_all("h3")
+latest = release_tags[0].findChildren("a" , recursive=False)
+s = latest[0].text
+version_ssh = re.sub('[^0-9.]+', '', s)
+print(version_ssh)
