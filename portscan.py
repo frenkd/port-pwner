@@ -70,7 +70,7 @@ def scan(target=TARGET):
         x[str(now_ts)] = status
         x["last"] = status
         db[target] = x
-        return status
+        return now_ts
 
     except socket.gaierror:
         print("\n Hostname Could Not Be Resolved")

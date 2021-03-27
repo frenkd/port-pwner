@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+
+<head>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<!-- 
+<p>{{ scan_str }}</p> -->
+
+<body class="bg-black">
+    <div class="flex justify-center">
+        <div class="port-pwner-ascii text-gray-600 text-1xl">
+            <a href="/">
+                <div>
+                    <pre>
+
+ _ __   ___  _ __| |_      _ ____      ___ __   ___ _ __
+| '_ \ / _ \| '__| __|____| '_ \ \ /\ / / '_ \ / _ \ '__|
+| |_) | (_) | |  | ||_____| |_) \ V  V /| | | |  __/ |
+| .__/ \___/|_|   \__|    | .__/ \_/\_/ |_| |_|\___|_|
+|_|                       |_|
+            </pre>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <h3 class="text-lg text-center font-bold m-5 text-gray-200">Scan of address: {{ scan['target'] }}</h3>
+    <h3 class="text-lg text-center font-bold m-5 text-gray-200">Time of scan: {{ scan_date }}</h3>
+    <table class="rounded-t-lg m-5 w-5/6 mx-auto bg-gray-800 text-gray-200">
+        <tr class="text-left border-b border-gray-300">
+            <th class="px-4 py-3">Port</th>
+            <th class="px-4 py-3">Service</th>
+            <th class="px-4 py-3">Version</th>
+            <th class="px-4 py-3">Latest Version</th>
+            <th class="px-4 py-3">Response</th>
+            <th class="px-4 py-3">Status</th>
+        </tr>
+        {% for port, info in scan.items() %}
+        <tr class="bg-gray-700 border-b border-gray-600">
+            <td class="px-4 py-3">{{ port }}</td>
+            <td class="px-4 py-3">{{ info['service'] }}</td>
+            <td class="px-4 py-3">{{ info['version'] }}</td>
+            <td class="px-4 py-3">{{ info['latest_version'] }}</td>
+            <td class="px-4 py-3">
+                {{ info['response'] }}
+            </td>
+
+            <td class="px-4 py-3">
+                {% if info['new'] == True %}
+                <span class="px-4 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    New
+                </span>
+                {% elif info['removed'] == True %}
+                <span class="px-4 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    Closed
+                </span>
+                {% else %}
+                <span
+                    class="px-4 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    Open
+                </span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+
+</html>
