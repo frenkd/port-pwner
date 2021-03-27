@@ -29,4 +29,11 @@ def create_app(test_config=None):
     def hello():
         return render_template('home.html')
 
+    @app.route('/scan')
+    def event_tracker():
+        # Parse query data - specify target
+        accountId = request.args.get('target')
+
+        return f"{}"
+
     return app
