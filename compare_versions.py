@@ -22,12 +22,12 @@ Content-Type: text/html; charset=iso-8859-1
 
 
 def check_output(input_string):
-    if None:
+    if input_string is None:
         return None
     if "OpenSSH_" in input_string:
-        return input_string.split("OpenSSH_", 1)[1].split(" ", 1)[0][:3]
+        return "OpenSSH v"+input_string.split("OpenSSH_", 1)[1].split(" ", 1)[0][:3]
     if "Server: Apache/" in input_string:
-        return input_string.split("Server: Apache/", 1)[1].split(" ", 1)[0]
+        return "Apache v"+input_string.split("Server: Apache/", 1)[1].split(" ", 1)[0]
     return None
 
 if __name__ == "__main__":

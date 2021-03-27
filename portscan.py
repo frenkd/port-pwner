@@ -6,7 +6,7 @@ import socket
 import datetime
 from socket import getservbyport
 from datetime import datetime
-# from compare_versions import check_output
+from compare_versions import check_output
 
 ascii_banner = pyfiglet.figlet_format("port-pwner")
 print(ascii_banner)
@@ -46,7 +46,7 @@ try:
                 print("no response from server")
             status[port] = {"version": check_output(
                 status[port]), "response": status[port]}
-        s.close()
+        s.close() 
 
     print("Scan complete")
 
@@ -59,17 +59,17 @@ try:
 
     unchanged_ports = [port for port in ports_new if port in ports_old]
     for port in unchanged_ports:
-        if port_history[port] != status[port]:
+        if port_history[port]['version'] != status[port]['version']:
             print(
-                f"Service {port_history[port]} changed to {status[port]}")
+                f"Service {port_history[port]['version']} changed to {status[port]['version']}")
 
     removed_ports = [port for port in ports_old if port not in ports_new]
     for port in removed_ports:
-        print(f"Removed {port}")
-
+        print(f"Removed {port}, {port_history[port]['version']}")
+ 
     new_ports = [port for port in ports_new if port not in ports_old]
     for port in new_ports:
-        print(f"Added {port}")
+        print(f"Added {port}, {status[port]['version']}")
 
     now_ts = datetime.now().timestamp()
     db[str(now_ts)] = status
