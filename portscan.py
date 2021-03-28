@@ -6,14 +6,13 @@ import datetime
 from datetime import datetime
 from servicer import check_output, get_service_name
 
-PORTS_TO_SCAN = [22, 80, 4000, 25565]  # range(1, 65535)
-TARGET = "192.168.1.34"
+PORTS_TO_SCAN = [22, 25, 69, 80, 4000, 7777, 25565]  # range(1, 65535)
 
 
-def scan(target=TARGET):
-    db = shelve.open(get_path(target))
+def scan(target):
+    db = shelve.open(get_path())
     try:
-        status = {"target": target}
+        status = {"target": target} 
         # scan ports
         for port in PORTS_TO_SCAN:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,7 +69,7 @@ def scan(target=TARGET):
         x[str(now_ts)] = status
         x["last"] = status
         db[target] = x
-        return now_ts
+        return target + "/" + str(now_ts) 
 
     except socket.gaierror:
         print("\n Hostname Could Not Be Resolved")
@@ -79,39 +78,48 @@ def scan(target=TARGET):
         db.close()
 
 
-def get_last(target=TARGET):
-    db = shelve.open(get_path(target))
-    if target in db:
-        return db[target]["last"]
-    return {}
+def get_last(target):
+    db = shelve.open(get_path())
+    try:
+        if target in db:
+            return db[target]["last"]
+        return {}
+    finally:
+        db.close()
 
 
 def get_scans():
     db = shelve.open(get_path())
-    x = ([{"id": scan, "target": target}
-          for target in db for scan in db[target] if scan != "last"])
-    x.sort(key=lambda x: x["id"], reverse=True)
-    return x
+    try:
+        x = ([{"id": scan, "target": target}
+              for target in db for scan in db[target] if scan != "last"])
+        x.sort(key=lambda x: x["id"], reverse=True)
+        return x
+    finally:
+        db.close()
 
 
 def get_scans_from_target(target):
     db = shelve.open(get_path())
-    x = ([{"id": scan, "target": target}
-          for scan in db[target] if scan != "last"])
-    x.sort(key=lambda x: x["id"], reverse=True)
-    return x
+    try:
+        x = ([{"id": scan, "target": target}
+              for scan in db[target] if scan != "last"])
+        x.sort(key=lambda x: x["id"], reverse=True)
+        return x
+    finally:
+        db.close()
 
 
+def get_scan(timestamp, target):
+    return shelve.open(get_path())[target][timestamp]
 
-def get_scan(timestamp, target=TARGET):
-    return shelve.open(get_path(target))[target][timestamp]
 
 def get_targets():
     return list(shelve.open(get_path()).keys())
 
-
-def get_path(target=TARGET) -> str:
-    return "data/port_data"
+ 
+def get_path() -> str:
+    return "port_data"
 
 
 if __name__ == "__main__":

@@ -30,9 +30,9 @@ def start_scan():
     return json.dumps(results)
 
 
-@app.route('/scan/<scanId>')
-def view_scan(scanId):
-    scan = get_scan(scanId)
+@app.route('/<target>/<scanId>')
+def view_scan(target, scanId):
+    scan = get_scan(scanId, str(target))
     scan = add_curr_version(scan)
     scan_str = str(scan)
     scan_date = datetime.fromtimestamp(

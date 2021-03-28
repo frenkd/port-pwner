@@ -58,7 +58,7 @@
                 <tr class="bg-gray-700 border-b border-gray-600">
                     <td class="px-4 py-3">{{ scan['target'] }}</td>
                     <td class="px-4 py-3">{{ scan['time'] }}</td>
-                    <td class="px-4 py-3"><a href="/scan/{{ scan['id'] }}" class="text-blue-400">View report</a></td>
+                    <td class="px-4 py-3"><a href="/{{ scan['target'] }}/{{ scan['id'] }}" class="text-blue-400">View report</a></td>
                     {% endfor %}
             </table>
             {%endif%}
@@ -73,19 +73,20 @@
     document.addEventListener("submit", (e) => {
         // Store reference to form to make later code easier to read
         const form = e.target;
+        const formdata = new FormData(form)
         document.getElementById("loadingimg").classList.remove("hidden")
 
         // Post data using the Fetch API
         fetch(form.action, {
             method: form.method,
-            body: new FormData(form),
+            body: formdata,
         })
             .then((resp) => resp.text())
-            .then((id) => {
-                console.log(id)
+            .then((gt) => {
+                gt = gt.substring(1, gt.length - 1)
                 // Display loading icon
-                document.getElementById("loadingimg").classList.add("hidden")
-                window.location.href = "/scan/" + id
+                // document.getElementById("loadingimg").classList.add("hidden")
+                window.location.href = "/" + gt
             })
 
         // Prevent the default form submit

@@ -19,7 +19,7 @@ def check_output(input_string):
         return (APACHE, input_string.split("Server: Apache/", 1)[1].split(" ", 1)[0])
     if "OpenSSH_" in input_string:
         return (OPENSSH, input_string.split("OpenSSH_", 1)[1].split(" ", 1)[0][:3])
-    return None
+    return (None, 0)
 
 
 def get_service_name(service_id):
