@@ -10,7 +10,6 @@ PORTS_TO_SCAN = [22, 25, 69, 80, 4000, 7777, 25565]  # range(1, 65535)
 
 
 def scan(target):
-    db = shelve.open(get_path())
     try:
         status = {"target": target}
         # scan ports
@@ -33,6 +32,7 @@ def scan(target):
                                 "service": get_service_name(service_id), "response": status[port], "new": False}
             s.close()
 
+        db = shelve.open(get_path())
         print("Scan complete")
         if target not in db:
             db[target] = {"last": {}}
@@ -82,7 +82,7 @@ def scan(target):
 
 
 def get_last(target):
-    db = shelve.open(get_path())
+    db = shelve.open(get_path(), flag='r')
     try:
         if target in db:
             return db[target]["last"]
@@ -92,7 +92,7 @@ def get_last(target):
 
 
 def get_scans():
-    db = shelve.open(get_path())
+    db = shelve.open(get_path(), flag='r')
     try:
         x = ([{"id": scan, "target": target, "summary": db[target][scan]["summary"]}
               for target in db for scan in db[target] if scan != "last"])
@@ -103,7 +103,7 @@ def get_scans():
 
 
 def get_scans_from_target(target):
-    db = shelve.open(get_path())
+    db = shelve.open(get_path(), flag='r')
     try:
         x = ([{"id": scan, "target": target, "summary": db[target][scan]["summary"]}
               for scan in db[target] if scan != "last"])
@@ -114,7 +114,7 @@ def get_scans_from_target(target):
 
 
 def get_scan(timestamp, target):
-    return shelve.open(get_path())[target][timestamp]
+    return shelve.open(get_path(), flag='r')[target][timestamp]
 
 
 def get_targets():
