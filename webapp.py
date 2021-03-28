@@ -16,7 +16,6 @@ app.config.from_mapping(
 
 @app.route('/')
 def base():
-    # return redirect(url_for('home'))
     scans = get_scans()
     for scan in scans:
         scan['time'] = datetime.fromtimestamp(
@@ -53,11 +52,7 @@ def view_scan(target, scanId):
     scan_str = str(scan)
     scan_date = datetime.fromtimestamp(
         float(scanId)).strftime('%Y-%m-%d, %H:%M:%S')
-    # scan[22]['new'] = False
-    # scan[22]['updated'] = True
-    # scan[25565]['removed'] = True
-    # scan[25565]['new'] = False
-    return render_template('scan_view.html', scan=scan, scan_date=scan_date, scan_str=scan_str)
+    return render_template('scan_view.html', scan=scan, scan_date=scan_date, scan_str=scan_str, target=target)
 
 
 @app.route('/start_periodic_scan', methods=['POST'])

@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <h3 class="text-lg text-center font-bold m-5 text-gray-200">Scan of address: {{ scan['target'] }}</h3>
+    <h3 class="text-lg text-center font-bold m-5 text-gray-200">Scan of address: {{ target }}</h3>
     <h3 class="text-lg text-center font-bold m-5 text-gray-200">Time of scan: {{ scan_date }}</h3>
     <table class="rounded-t-lg m-5 w-5/6 mx-auto bg-gray-800 text-gray-200">
         <tr class="text-left border-b border-gray-300">
@@ -35,6 +35,8 @@
             <th class="px-4 py-3">Latest Version</th>
             <th class="px-4 py-3">Response</th>
             <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Vulnerability</th>
+            <th class="px-4 py-3">CVE report</th>
         </tr>
         {% for port, info in scan.items() %}
         <tr class="bg-gray-700 border-b border-gray-600">
@@ -62,6 +64,32 @@
                 </span>
                 {% endif %}
             </td>
+
+            <td class="px-4 py-3">
+                {% if info['version'] == '???' or info['version'] == 0 %}
+                <span
+                    class="px-4 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    Uknown
+                </span>
+                {% elif info['version'] == info['latest_version'] %}
+                <span class="px-4 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Safe
+                </span>
+                {% elif info['version'] != info['latest_version'] %}
+                <span class="px-4 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    Vulnerable
+                </span>
+                {% else %}
+                <span
+                    class="px-4 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    Uknown
+                </span>
+                {% endif %}
+            </td>
+
+            <td class="px-4 py-3"><a
+                    href="https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword={{ info['service'] }}+{{ info['version'] }}"
+                    class="text-blue-400" target="_blank">CVE report</a></td>
         </tr>
         {% endfor %}
     </table>
