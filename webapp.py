@@ -31,6 +31,8 @@ def periodic_scan():
 @app.route('/start_scan', methods=['POST'])
 def start_scan():
     target = request.form['target']
+    if target == "":
+        target = "localhost"
     results = scan(target)
     return json.dumps(results)
 
