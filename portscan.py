@@ -82,7 +82,7 @@ def scan(target):
 
 
 def get_last(target):
-    db = shelve.open(get_path(), flag='r')
+    db = shelve.open(get_path(), flag='c')
     try:
         if target in db:
             return db[target]["last"]
@@ -92,7 +92,7 @@ def get_last(target):
 
 
 def get_scans():
-    db = shelve.open(get_path(), flag='r')
+    db = shelve.open(get_path(), flag='c')
     try:
         x = ([{"id": scan, "target": target, "summary": db[target][scan]["summary"]}
               for target in db for scan in db[target] if scan != "last"])
@@ -103,7 +103,7 @@ def get_scans():
 
 
 def get_scans_from_target(target):
-    db = shelve.open(get_path(), flag='r')
+    db = shelve.open(get_path(), flag='c')
     try:
         x = ([{"id": scan, "target": target, "summary": db[target][scan]["summary"]}
               for scan in db[target] if scan != "last"])
@@ -114,7 +114,7 @@ def get_scans_from_target(target):
 
 
 def get_scan(timestamp, target):
-    return shelve.open(get_path(), flag='r')[target][timestamp]
+    return shelve.open(get_path(), flag='c')[target][timestamp]
 
 
 def get_targets():
