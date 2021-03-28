@@ -12,7 +12,7 @@ PORTS_TO_SCAN = [22, 25, 69, 80, 4000, 7777, 25565]  # range(1, 65535)
 def scan(target):
     db = shelve.open(get_path())
     try:
-        status = {"target": target} 
+        status = {"target": target}
         # scan ports
         for port in PORTS_TO_SCAN:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,13 +63,16 @@ def scan(target):
             print(f"Added {port}, {status[port]['version']}")
             status[port]["new"] = True
 
+        status["summary"] = {"open": len(
+            ports_new), "new": len(new_ports)}
+
         # save current scan and overwrite the latest scan
         now_ts = datetime.now().timestamp()
         x = db[target]
         x[str(now_ts)] = status
         x["last"] = status
         db[target] = x
-        return target + "/" + str(now_ts) 
+        return target + "/" + str(now_ts)
 
     except socket.gaierror:
         print("\n Hostname Could Not Be Resolved")
@@ -91,7 +94,7 @@ def get_last(target):
 def get_scans():
     db = shelve.open(get_path())
     try:
-        x = ([{"id": scan, "target": target}
+        x = ([{"id": scan, "target": target, "summary": db[target][scan]["summary"]}
               for target in db for scan in db[target] if scan != "last"])
         x.sort(key=lambda x: x["id"], reverse=True)
         return x
@@ -117,7 +120,7 @@ def get_scan(timestamp, target):
 def get_targets():
     return list(shelve.open(get_path()).keys())
 
- 
+
 def get_path() -> str:
     return "port_data"
 

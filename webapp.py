@@ -46,6 +46,7 @@ def view_scan(target, scanId):
 
 def add_curr_version(scan):
     del scan['target']
+    del scan['summary']
     for port in scan:
         scan[port]['latest_version'] = get_latest_version(
             scan[port]['serviceID'])
