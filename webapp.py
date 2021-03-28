@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, redirect, url_for, request
-from portscan import scan, get_last, get_path, get_scan, get_scans, get_service_name
+from portscan import scan, get_last, get_path, get_scan, get_scans, get_service_name, get_scans_from_target
 import json
 from datetime import datetime
 from servicer import get_latest_version
@@ -16,12 +16,20 @@ app.config.from_mapping(
 
 @app.route('/')
 def base():
-    # return redirect(url_for('home'))
     scans = get_scans()
     for scan in scans:
         scan['time'] = datetime.fromtimestamp(
         float(scan['id'])).strftime('%Y-%m-%d, %H:%M:%S')
     return render_template('index.html', scans=scans, scans_str=str(scans))
+
+
+@app.route('/<target>')
+def for_target(target):
+    scans = get_scans_from_target(target)
+    for scan in scans:
+        scan['time'] = datetime.fromtimestamp(
+            float(scan['id'])).strftime('%Y-%m-%d, %H:%M:%S')
+    return render_template('target_view.html', scans=scans, scans_str=str(scans))
 
 @app.route('/periodic_scan')
 def periodic_scan():
@@ -31,6 +39,8 @@ def periodic_scan():
 @app.route('/start_scan', methods=['POST'])
 def start_scan():
     target = request.form['target']
+    if target == "":
+        target = "localhost"
     results = scan(target)
     return json.dumps(results)
 
@@ -42,11 +52,7 @@ def view_scan(target, scanId):
     scan_str = str(scan)
     scan_date = datetime.fromtimestamp(
         float(scanId)).strftime('%Y-%m-%d, %H:%M:%S')
-    # scan[22]['new'] = False
-    # scan[22]['updated'] = True
-    # scan[25565]['removed'] = True
-    # scan[25565]['new'] = False
-    return render_template('scan_view.html', scan=scan, scan_date=scan_date, scan_str=scan_str)
+    return render_template('scan_view.html', scan=scan, scan_date=scan_date, scan_str=scan_str, target=target)
 
 
 @app.route('/start_periodic_scan', methods=['POST'])
