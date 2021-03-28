@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, redirect, url_for, request
-from portscan import scan, get_last, get_path, get_scan, get_scans, get_service_name
+from portscan import scan, get_last, get_path, get_scan, get_scans, get_service_name, get_scans_from_target
 import json
 from datetime import datetime
 from servicer import get_latest_version
@@ -22,6 +22,15 @@ def base():
         scan['time'] = datetime.fromtimestamp(
         float(scan['id'])).strftime('%Y-%m-%d, %H:%M:%S')
     return render_template('index.html', scans=scans, scans_str=str(scans))
+
+
+@app.route('/<target>')
+def for_target(target):
+    scans = get_scans_from_target(target)
+    for scan in scans:
+        scan['time'] = datetime.fromtimestamp(
+            float(scan['id'])).strftime('%Y-%m-%d, %H:%M:%S')
+    return render_template('target_view.html', scans=scans, scans_str=str(scans))
 
 @app.route('/periodic_scan')
 def periodic_scan():

@@ -105,7 +105,7 @@ def get_scans():
 def get_scans_from_target(target):
     db = shelve.open(get_path())
     try:
-        x = ([{"id": scan, "target": target}
+        x = ([{"id": scan, "target": target, "summary": db[target][scan]["summary"]}
               for scan in db[target] if scan != "last"])
         x.sort(key=lambda x: x["id"], reverse=True)
         return x
