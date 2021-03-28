@@ -5,10 +5,12 @@ from functools import lru_cache
 
 APACHE = 1
 OPENSSH = 2
+SMTP_POSTFIX = 3
 
 name_map = {
     APACHE: 'Apache',
-    OPENSSH: 'OpenSSH'
+    OPENSSH: 'OpenSSH',
+    SMTP_POSTFIX: 'SMTP POSTFIX'
 }
 
 
@@ -19,6 +21,8 @@ def check_output(input_string):
         return (APACHE, input_string.split("Server: Apache/", 1)[1].split(" ", 1)[0])
     if "OpenSSH_" in input_string:
         return (OPENSSH, input_string.split("OpenSSH_", 1)[1].split(" ", 1)[0][:3])
+    if "ESMTP Postfix" in input_string:
+        return (SMTP_POSTFIX, '???')
     return (None, 0)
 
 
