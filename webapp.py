@@ -72,7 +72,10 @@ def start_periodic_scan():
 def add_curr_version(scan):
     del scan['target']
     del scan['summary']
+    print(scan)
     for port in scan:
+        if("removed" in scan[port]):
+            continue
         scan[port]['latest_version'] = get_latest_version(
             scan[port]['serviceID'])
         if scan[port]['response'] is not None:

@@ -6,7 +6,7 @@ import datetime
 from datetime import datetime
 from servicer import check_output, get_service_name
 
-PORTS_TO_SCAN = [22, 25, 69, 80, 4000, 7777, 25565]  # range(1, 65535)
+PORTS_TO_SCAN = [22, 25, 69, 80, 4000, 7777, 7890, 25565, ]  # range(1, 65535)
 
 
 def scan(target):
@@ -46,6 +46,8 @@ def scan(target):
         # TODO check only scanned ports
         unchanged_ports = [port for port in ports_new if port in ports_old]
         for port in unchanged_ports:
+            if 'removed' in port_history[port]:
+                continue
             if port_history[port]['version'] != status[port]['version']:
                 print(
                     f"Service {port_history[port]['version']} changed to {status[port]['version']}")
