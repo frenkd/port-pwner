@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 from servicer import get_latest_version
 from pprint import pprint
+from time import sleep
 
 # create and configure the app
 app = Flask(__name__, instance_relative_config=True)
@@ -21,6 +22,10 @@ def base():
         scan['time'] = datetime.fromtimestamp(
         float(scan['id'])).strftime('%Y-%m-%d, %H:%M:%S')
     return render_template('index.html', scans=scans, scans_str=str(scans))
+
+@app.route('/periodic_scan')
+def periodic_scan():
+    return render_template('periodic_scan.html')
 
 
 @app.route('/start_scan', methods=['POST'])
@@ -43,6 +48,20 @@ def view_scan(target, scanId):
     # scan[25565]['new'] = False
     return render_template('scan_view.html', scan=scan, scan_date=scan_date, scan_str=scan_str)
 
+
+@app.route('/start_periodic_scan', methods=['POST'])
+def start_periodic_scan():
+    target = request.form['target']
+    interval = int(request.form['interval'])
+    scan_num = int(request.form['scan_num'])
+
+    results = []
+    for i in range(scan_num):
+        result = scan(target)
+        results.append(result)
+        sleep(interval)
+        
+    return json.dumps(results)
 
 def add_curr_version(scan):
     del scan['target']

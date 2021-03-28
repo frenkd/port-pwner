@@ -23,7 +23,7 @@
            
         </div>
     </div>
-    <div>
+    <div class="justify-center">
         <form action="{{ url_for('start_scan') }}" method="post" class="">
             <div class="flex justify-center">
                 <input placeholder="192.168.0.1" type="text" name="target" class="py-2 px-4 rounded-sm text-1xl">
@@ -44,6 +44,10 @@
                 </svg>
             </div>
         </form>
+        <div class="flex justify-center">
+            <a href="/periodic_scan" class="text-blue-400 text-1xl m-2">Periodic Scan</a>
+        </div>
+        
         <div class="flex justify-center mt-10 text-gray-200">
             {%if not scans%}
             <h2>No scans yet ...</h2>
