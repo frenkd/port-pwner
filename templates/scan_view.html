@@ -87,9 +87,15 @@
                 {% endif %}
             </td>
 
-            <td class="px-4 py-3"><a
+            <td class="px-4 py-3">
+                {% if info['version'] != '???' and info['version'] != 0 %}
+                <a
                     href="https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword={{ info['service'] }}+{{ info['version'] }}"
-                    class="text-blue-400" target="_blank">CVE report</a></td>
+                    class="text-blue-400" target="_blank">CVE report</a>
+                    {% else %}
+                    No report found
+                    {% endif %}
+                </td>
         </tr>
         {% endfor %}
     </table>
