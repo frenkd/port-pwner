@@ -1,5 +1,5 @@
 # port-pwner
-EESTECH Cybersecurity Hackathon 2021
+EESTECH Cybersecurity Hackathon 2021 absulute winner and Krka challenge winner
 
 ### Requirements
 Python 3.8
